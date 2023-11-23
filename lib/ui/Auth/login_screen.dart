@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+
 import 'package:taskmanagertwo/data/networkutils.dart';
+import 'package:taskmanagertwo/data/uitils.dart';
 import 'package:taskmanagertwo/data/urls.dart';
 import 'package:taskmanagertwo/widgets/background.dart';
-
 import '../../utils/textstyle.dart';
 import '../../widgets/appbutton.dart';
 import '../../widgets/text_formfieldresuable.dart';
@@ -29,6 +30,8 @@ class _LoginScreenState extends State<LoginScreen> {
 
   }
   GlobalKey<FormState> formkey=GlobalKey<FormState>();
+  bool isloadin=false;
+
 
   @override
   Widget build(BuildContext context) {
@@ -59,20 +62,43 @@ class _LoginScreenState extends State<LoginScreen> {
               controller: TextEditingController(), hintext: 'Password',obscuretext: true,),
             SizedBox(height: 15,),
 
+            if(isloadin)
+              Center(
+                child: CircularProgressIndicator(),
+              )
+            else
             AppButton(ontap: () async {
               if(formkey.currentState!.validate()){
+                isloadin=true;
+                setState(() {
+
+                });
                 final result= await NetworkUtils().postApi(Urls.login,
 
 
                 body: {
                   "email":emailcontroller.text.trim(),
                   "password":passwordcontroller.text.trim(),
-                },unAuthorized: (){
+                },
+                    unAuthorized: (){
                   ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("email or pasword increet",)));
                     }
+
                 );
+                isloadin=false;
+                setState(() {
+
+                });
+
                 if(result !=null && result['status']=='success'){
-                 Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (contex)=>BottomNavBar()),
+                 await AuthUitils().getData(result['data']['firstName'], result['data']['lastName'],
+                      result['data']['mobile'], result['token'], result['data']['photo'],result['data']['email']);
+                  
+                  
+
+
+
+                  Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (contex)=>BottomNavBar()),
                          (route) => false);
                 }
               }

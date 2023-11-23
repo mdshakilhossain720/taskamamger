@@ -1,5 +1,6 @@
 import 'dart:convert';
-import 'dart:html';
+//import 'dart:html';
+import 'dart:ui';
 
 import 'package:http/http.dart'as http;
 class NetworkUtils{
@@ -25,9 +26,9 @@ class NetworkUtils{
     }
     }
        //postMethod
-    Future<dynamic> postApi(String url,{Map<String,String>?body,VoidCallback? unAuthorized}) async {
+    Future<dynamic> postApi(String url,{Map<String,String>?body,VoidCallback? unAuthorized,String? token}) async {
     final http.Response response=await http.post(Uri.parse(url,),
-        headers: {"Content-Type": "application/json"},body: jsonEncode(body));
+        headers: {"Content-Type": "application/json","token":token ?? ""},body: jsonEncode(body));
     try{
       if(response.statusCode==200){
         return jsonDecode(response.body);

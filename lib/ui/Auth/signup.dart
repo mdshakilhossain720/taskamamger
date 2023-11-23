@@ -34,6 +34,7 @@ class _SignUpState extends State<SignUp> {
 
 
   GlobalKey<FormState> formkey=GlobalKey<FormState>();
+  bool isloading=false;
 
   @override
   Widget build(BuildContext context) {
@@ -96,9 +97,18 @@ class _SignUpState extends State<SignUp> {
                     },
                     controller: passwordcontroller, hintext:"Password"),
                 SizedBox(height: 10,),
-
+               if(isloading)
+                 Center(
+                   child: CircularProgressIndicator(),
+                 )
+                 else
                 AppButton(ontap: () async {
                   if(formkey.currentState!.validate()){
+                    isloading=true;
+                    setState(() {
+
+                    });
+
                     final result=await NetworkUtils().postApi("https://task.teamrabbil.com/api/v1/registration",
 
 
@@ -109,7 +119,12 @@ class _SignUpState extends State<SignUp> {
                       "mobile":phonecontroller.text.trim(),
                       "password":passwordcontroller.text.trim(),
                     }
+
                     );
+                    isloading=false;
+                    setState(() {
+
+                    });
                     if(result !=null && result['status']=='"success'){
                       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("success full")));
                     }else{
